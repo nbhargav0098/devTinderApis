@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const validator = require("validator");
 
 const userSchema = new mongoose.Schema(
   {
@@ -6,18 +7,26 @@ const userSchema = new mongoose.Schema(
     lastName: { type: String, required: true },
     emailId: { type: String, required: true, unique: true, lowercase: true, trim: true },
     password: { type: String, required: true },
-    age: { type: Number, required: true, min: 18, max: 60 },
-    gender: { 
-      type: String, 
-      validate(value){
-        if(!["male","female","others"].includes(value)){
+    age: { type: Number, required: true, min: 18, max: 80 },
+    gender: {
+      type: String,
+      validate(value) {
+        if (!["male", "female", "others"].includes(value)) {
           throw new Error("Gender is not valid")
         }
-      } 
+      }
     },
-    about: {type: String, default: "this is default about section"},
-    photoUrl: {type: String},
-    skills: {type: [String]},
+    about: { type: String, default: "this is default about section" },
+    photoUrl: {
+      type: String, 
+      default: "https://geographyandyou.com/images/user-profile.png",
+      validate(value) {
+        if (!validator.isURL(value)) {
+          throw new Error("Invalid Photo URL: " + value);
+        }
+      },
+    },
+    skills: { type: [String] },
   },
   {
     timestamps: true,

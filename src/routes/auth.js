@@ -34,7 +34,7 @@ authRouter.post("/login",async(req,res)=>{
   try {
     const user = await User.findOne({emailId: emailId});
     if (!user){
-      throw new Error("Invalid credentials");
+      return res.status(404).json("User not found!")
     }
     const isPasswordValid = await bcrypt.compare(password,user.password);
     if(isPasswordValid){
@@ -42,7 +42,7 @@ authRouter.post("/login",async(req,res)=>{
       res.cookie("token",token)
       res.json({message:"Login Successful!", user});
     }else{
-      throw new Error("Invalid credentials");
+      return res.status(400).json("Invalid Credentials")
     }
   
   } catch (error) {
@@ -52,9 +52,11 @@ authRouter.post("/login",async(req,res)=>{
 
 
 //logout
-authRouter.post("/logout",(req,res)=>{
-  res.cookie("token",null,{expires: new Date(Date.now())});
-  res.send("Logged out successfully!");
+authRouter.post("/logout", async (req, res) => {
+  res.cookie("token", null, {
+    expires: new Date(Date.now()),
+  });
+  res.send("Logout Successful!!");
 });
 
 module.exports = authRouter;
